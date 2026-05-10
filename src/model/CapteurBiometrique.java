@@ -1,20 +1,12 @@
 package model;
 
-public class CapteurBiometrique extends Capteur {
-    private final TypeBiom type;
-
-    public CapteurBiometrique(String code, double seuilMin, double seuilMax, TypeBiom type) {
-        super(code, seuilMin, seuilMax);
-        this.type = type;
-    }
-
-    public TypeBiom getType() {
-        return type;
+public class CapteurBiometrique extends CapteurNumerique {
+    public CapteurBiometrique(String code, String zone, PlageSeuils plageSeuils, TypeMesure typeMesure, String uniteMesure) {
+        super(code, zone, plageSeuils, typeMesure, uniteMesure);
     }
 
     @Override
     public double lireValeur() {
         return 0.0;
     }
-
 }

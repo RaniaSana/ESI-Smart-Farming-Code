@@ -3,23 +3,28 @@ package model;
 import java.time.LocalDateTime;
 
 public abstract class Capteur {
-    
     private final String code;
+    private final String zone;
     private StatutCapteur statut;
-    private final double seuilMin;
-    private final double seuilMax;
+    private final PlageSeuils plageSeuils;
 
-
+    protected Capteur(String code, String zone, PlageSeuils plageSeuils) {
+        this.code = code;
+        this.zone = zone;
+        this.plageSeuils = plageSeuils;
+        this.statut = StatutCapteur.ACTIF;
+    }
 
     protected Capteur(String code, double seuilMin, double seuilMax) {
-        this.code = code;
-        this.seuilMin = seuilMin;
-        this.seuilMax = seuilMax;
-        this.statut = StatutCapteur.ACTIF;
+        this(code, "NON_DEFINIE", new PlageSeuils(seuilMin, seuilMax));
     }
 
     public String getCode() {
         return code;
+    }
+
+    public String getZone() {
+        return zone;
     }
 
     public StatutCapteur getStatut() {
@@ -27,32 +32,39 @@ public abstract class Capteur {
     }
 
     public double getSeuilMin() {
-        return seuilMin;
+        return plageSeuils.getMin();
     }
 
     public double getSeuilMax() {
-        return seuilMax;
+        return plageSeuils.getMax();
+    }
+
+    public PlageSeuils getPlageSeuils() {
+        return plageSeuils;
     }
 
     public abstract double lireValeur();
-    public Releve creerReleve(double valeur, String unite) {
-        return new Releve(valeur, unite, LocalDateTime.now());
+
+    public ReleveNumerique creerReleve(double valeur, String unite) {
+        return new ReleveNumerique(valeur, unite, LocalDateTime.now());
     }
 
     public boolean estHorsSeuil(double valeur) {
-        return valeur < seuilMin || valeur > seuilMax;
+        return plageSeuils.horsSeuil(valeur);
     }
 
-    public Alerte genererAlerte(Releve releve) {
+    public Alerte genererAlerte(ReleveNumerique releve) {
         if (!estHorsSeuil(releve.getValeur())) {
             return null;
         }
         String message = "Capteur " + code + " hors seuil: " + releve.toTexte();
-        return new Alerte(NiveauGravite.CRITIQUE, message);
+        return new Alerte(NiveauGravite.CRITIQUE, StatutAlerte.OUVERTE, message, zone, getClass().getSimpleName());
     }
+
     public void activer() {
         this.statut = StatutCapteur.ACTIF;
     }
+
     public void suspendre() {
         this.statut = StatutCapteur.SUSPENDU;
     }

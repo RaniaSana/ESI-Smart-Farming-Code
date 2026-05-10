@@ -1,11 +1,13 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class CapteurGPS extends Capteur {
     private double latitude;
     private double longitude;
 
-    public CapteurGPS(String code, double seuilMin, double seuilMax, double latitude, double longitude) {
-        super(code, seuilMin, seuilMax);
+    public CapteurGPS(String code, String zone, PlageSeuils plageSeuils, double latitude, double longitude) {
+        super(code, zone, plageSeuils);
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -29,6 +31,10 @@ public class CapteurGPS extends Capteur {
     @Override
     public double lireValeur() {
         return 0.0;
+    }
+
+    public ReleveGPS creerReleveGPS() {
+        return new ReleveGPS(latitude, longitude, LocalDateTime.now());
     }
 
     public String localiser() {
