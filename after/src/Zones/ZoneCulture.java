@@ -1,10 +1,10 @@
-package after.src.Zones;
+package Zones;
 import java.util.ArrayList;
 import java.util.List;
 
-import after.src.Cultures.Culture;
-import after.src.Enumérations.TypeCulture;
-import after.src.Utilitaires.*;
+import Cultures.Culture;
+import Enumérations.TypeCulture;
+import Utilitaires.*;
 
 // Zone dédiée aux cultures. Elle héberge plusieurs cultures et est équipée
 // de capteurs environnementaux et de capteurs de sol.

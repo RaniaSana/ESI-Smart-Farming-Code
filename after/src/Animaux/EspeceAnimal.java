@@ -1,6 +1,6 @@
-package after.src.Animaux;
+package Animaux;
 
-import after.src.Enumérations.TypeElevage;
+import Enumérations.TypeElevage;
 
 // Décrit l'espèce d'un animal (son nom et la catégorie d'élevage à laquelle il appartient)
 public class EspeceAnimal {

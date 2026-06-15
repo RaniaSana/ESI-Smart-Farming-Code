@@ -1,9 +1,9 @@
-package after.src.Animaux;
+package Animaux;
 
 import java.util.Date;
 
-import after.src.Enumérations.EtatSante;
-import after.src.Enumérations.TypeEvenementSanitaire;
+import Enumérations.EtatSante;
+import Enumérations.TypeEvenementSanitaire;
 
 // Représente un événement sanitaire consigné pour un animal
 // (contrôle, maladie, vaccination, etc.)

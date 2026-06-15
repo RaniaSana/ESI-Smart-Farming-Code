@@ -1,4 +1,4 @@
-package after.src.Utilitaires;
+package Utilitaires;
 
 // Délimite une zone géographique par ses coordonnées GPS (coin bas-gauche / coin haut-droit)
 public class LimitesGeographiques {

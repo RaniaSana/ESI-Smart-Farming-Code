@@ -1,4 +1,4 @@
-package after.src.Utilitaires;
+package Utilitaires;
 
 // Exception levée si on tente de suspendre une zone déjà suspendue
 public class ZoneDejaInactiveException extends RuntimeException {

@@ -1,10 +1,10 @@
-package after.src.Classe_Principale;
+package Classe_Principale;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import after.src.Utilitaires.*;
-import after.src.Zones.*;
+import Utilitaires.*;
+import Zones.*;
 
 
 

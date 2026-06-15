@@ -1,4 +1,4 @@
-package after.src.Enumérations;
+package Enumérations;
 
 // Les trois familles de cultures gérées par la ferme
 public enum TypeCulture {

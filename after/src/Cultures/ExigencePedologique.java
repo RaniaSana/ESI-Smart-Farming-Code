@@ -1,4 +1,4 @@
-package after.src.Cultures;
+package Cultures;
 
 // Définit les conditions de sol optimales pour une culture : plage de pH et d'humidité
 public class ExigencePedologique {

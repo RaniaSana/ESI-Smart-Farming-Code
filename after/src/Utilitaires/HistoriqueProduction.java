@@ -1,7 +1,7 @@
-package after.src.Utilitaires;
+package Utilitaires;
 import java.util.Date;
 
-import after.src.Enumérations.TypeProduction;
+import Enumérations.TypeProduction;
 
 // Enregistre une entrée de production pour une zone (quantité produite à une date donnée)
 public class HistoriqueProduction {

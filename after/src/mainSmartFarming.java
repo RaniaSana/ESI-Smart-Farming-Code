@@ -1,14 +1,14 @@
-package after.src;
+
 
 import java.util.Date;
 import java.util.List;
 
-import after.src.Animaux.*;
-import after.src.Classe_Principale.SmartFarming;
-import after.src.Cultures.*;
-import after.src.Enumérations.*;
-import after.src.Utilitaires.*;
-import after.src.Zones.*;
+import Animaux.*;
+import Classe_Principale.SmartFarming;
+import Cultures.*;
+import Enumérations.*;
+import Utilitaires.*;
+import Zones.*;
 
 public class mainSmartFarming {
 
@@ -22,10 +22,9 @@ public class mainSmartFarming {
         LimitesGeographiques limitesGenerales = new LimitesGeographiques(36.0, 2.5, 37.0, 4.0);
         SmartFarming ferme = new SmartFarming("F001", "Green Valley Farm", limitesGenerales);
 
-        // System.out.println("Ferme créée : " + ferme);
-        // ferme.displayFarm();
+        System.out.println("Ferme créée : " + ferme);
+        ferme.displayFarm();
 
-        ferme.toString();
 
 
         // ============================================================
@@ -49,17 +48,18 @@ public class mainSmartFarming {
         ferme.ajouterZone(zoneElevage);
         ferme.ajouterZone(zoneAquacole);
 
-        //System.out.println("Zones ajoutées : " + zoneCulture);
-        //System.out.println("               " + zoneElevage);
-        //System.out.println("               " + zoneAquacole);
+        System.out.println("Zones ajoutées : " + zoneCulture);
+        System.out.println("               " + zoneElevage);
+        System.out.println("               " + zoneAquacole);
 
 
 
         // ============================================================
         // 3. VUE D'ENSEMBLE DES ZONES
         // ============================================================
-        //System.out.println("\n--- 3. Vue d'ensemble des zones ---");
-        //ferme.displayOverviewFarm();
+        
+        System.out.println("\n--- 3. Vue d'ensemble des zones ---");
+        ferme.displayOverviewFarm();
 
 
         // ============================================================
@@ -82,32 +82,32 @@ public class mainSmartFarming {
         zoneCulture.ajouterCulture(tomato);
         zoneCulture.ajouterCulture(apple);
 
-        //System.out.println("Cultures ajoutées à " + zoneCulture.getNom());
+        System.out.println("Cultures ajoutées à " + zoneCulture.getNom());
         zoneCulture.afficherRapportCultures();
 
         // Vérification des exigences pédologiques
-        //System.out.println("\nExigences wheat compatibles (pH=6.5, hum=55) ? " + exigence1.estCompatible(6.5, 55.0));
-        //System.out.println("Exigences wheat compatibles (pH=4.0, hum=30) ? " + exigence1.estCompatible(4.0, 30.0));
+        System.out.println("\nExigences wheat compatibles (pH=6.5, hum=55) ? " + exigence1.estCompatible(6.5, 55.0));
+        System.out.println("Exigences wheat compatibles (pH=4.0, hum=30) ? " + exigence1.estCompatible(4.0, 30.0));
 
 
         // ============================================================
         // 5. EVOLUTION DES STADES DE CROISSANCE
         // ============================================================
-        //System.out.println("\n--- 5. Evolution des stades de croissance ---");
+        System.out.println("\n--- 5. Evolution des stades de croissance ---");
 
-        //System.out.println("Stade initial wheat : " + wheat.getStadeCroissance());
+        System.out.println("Stade initial wheat : " + wheat.getStadeCroissance());
         wheat.changerStade(StadeCroissance.GERMINATION);
-        //System.out.println("Après changerStade  : " + wheat.getStadeCroissance());
+        System.out.println("Après changerStade  : " + wheat.getStadeCroissance());
         wheat.changerStade(StadeCroissance.CROISSANCE);
 
         tomato.changerStade(StadeCroissance.GERMINATION);
 
-        // Affichage de l'évolution dans le temps pour une culture
-        //wheat.afficherEvolutionStades();
+        //Affichage de l'évolution dans le temps pour une culture
+        wheat.afficherEvolutionStades();
 
         // Evolution de toutes les cultures de la zone d'un coup
-        //System.out.println();
-        //zoneCulture.afficherEvolutionToutesLesCultures();
+        System.out.println();
+        zoneCulture.afficherEvolutionToutesLesCultures();
 
 
         // ============================================================
@@ -140,15 +140,15 @@ public class mainSmartFarming {
         zoneElevage.ajouterAnimal(vache2);
         zoneElevage.ajouterAnimal(mouton1);
 
-        /*System.out.println("Animal : " + vache1);
+        System.out.println("Animal : " + vache1);
         System.out.println("Animal : " + vache2);
-        System.out.println("Animal : " + mouton1);*/
+        System.out.println("Animal : " + mouton1);
 
         // On place mouton1 en quarantaine directement
-        /*mouton1.changerEtat(EtatSante.QUARANTAINE);*/
-        /*System.out.println("\nAprès changerEtat mouton1 : " + mouton1.getEtat());*/
+        mouton1.changerEtat(EtatSante.QUARANTAINE);
+        System.out.println("\nAprès changerEtat mouton1 : " + mouton1.getEtat());
 
-        //zoneElevage.afficherAnimaux();
+        zoneElevage.afficherAnimaux();
 
 
         // ============================================================
@@ -184,12 +184,12 @@ public class mainSmartFarming {
         // ============================================================
         // 9. [EVAL A1] — isHealthy
         // ============================================================
-        /*System.out.println("\n--- 9. [EVAL A1] isHealthy ---");
+        System.out.println("\n--- 9. [EVAL A1] isHealthy ---"); 
 
         System.out.println("vache1 isHealthy(500.0) -> " + vache1.isHealthy(500.0)); // true  : SAIN, poids 520 >= 500
         System.out.println("vache1 isHealthy(600.0) -> " + vache1.isHealthy(600.0)); // false : poids 520 < 600
         System.out.println("vache2 isHealthy(400.0) -> " + vache2.isHealthy(400.0)); // false : MALADE
-        System.out.println("mouton1 isHealthy(50.0) -> " + mouton1.isHealthy(50.0)); // false : QUARANTAINE*/
+        System.out.println("mouton1 isHealthy(50.0) -> " + mouton1.isHealthy(50.0)); // false : QUARANTAINE
 
 
         // ============================================================
@@ -208,7 +208,7 @@ public class mainSmartFarming {
 
 
 
-        //System.out.println("Nb malades/quarantaine : " + zoneElevage.getNbAnimauxMalades());
+        System.out.println("Nb malades/quarantaine : " + zoneElevage.getNbAnimauxMalades());
 
 
         // ============================================================
@@ -299,27 +299,27 @@ public class mainSmartFarming {
         // ============================================================
         // 15. TOTAL PRODUCTION PAR ZONE
         // ============================================================
-        /*System.out.println("\n--- 15. Total production par zone ---");
-        ferme.afficherTotalProductionParZone(debutPeriode, finPeriode);*/
+        System.out.println("\n--- 15. Total production par zone ---");
+        ferme.afficherTotalProductionParZone(debutPeriode, finPeriode);
 
 
         // ============================================================
         // 16. RECHERCHE D'UNE ZONE PAR CODE
         // ============================================================
-        /*System.out.println("\n--- 16. Recherche d'une zone par code ---");
+        System.out.println("\n--- 16. Recherche d'une zone par code ---");
 
         Zone trouvee = ferme.rechercherZone("Z002");
         System.out.println("Recherche Z002 : " + (trouvee != null ? trouvee : "introuvable"));
 
         Zone introuvable = ferme.rechercherZone("Z999");
-        System.out.println("Recherche Z999 : " + (introuvable == null ? "introuvable" : introuvable));*/
+        System.out.println("Recherche Z999 : " + (introuvable == null ? "introuvable" : introuvable));
 
 
         // ============================================================
         // 17. VUE D'ENSEMBLE FINALE
         // ============================================================
-        /*System.out.println("\n--- 17. Vue d'ensemble finale ---");
-        ferme.displayOverviewFarm();*/
+        System.out.println("\n--- 17. Vue d'ensemble finale ---");
+        ferme.displayOverviewFarm();
 
 
         // ============================================================

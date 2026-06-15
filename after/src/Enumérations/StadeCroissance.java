@@ -1,4 +1,4 @@
-package after.src.Enumérations;
+package Enumérations;
 
 // Les stades successifs du cycle de vie d'une culture
 public enum StadeCroissance {

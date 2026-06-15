@@ -1,12 +1,11 @@
-package after.src.Zones;
+package Zones;
 import java.util.ArrayList;
 import java.util.List;
 
-import after.src.Animaux.*;
-import after.src.Cultures.Culture;
-import after.src.Enumérations.EtatSante;
-import after.src.Enumérations.TypeElevage;
-import after.src.Utilitaires.*;   
+import Animaux.*;
+import Enumérations.EtatSante;
+import Enumérations.TypeElevage;
+import Utilitaires.*;   
 
 // Zone dédiée à l'élevage. Accueille des animaux d'un même type (ruminants ou volaille)
 // et dispose d'un programme d'alimentation défini.

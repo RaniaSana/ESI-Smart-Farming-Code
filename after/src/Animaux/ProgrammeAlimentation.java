@@ -1,4 +1,4 @@
-package after.src.Animaux;
+package Animaux;
 
 // Définit le régime alimentaire d'une zone : type d'aliment et quantité par repas
 public class ProgrammeAlimentation {

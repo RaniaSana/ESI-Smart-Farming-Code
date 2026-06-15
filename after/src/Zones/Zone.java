@@ -1,10 +1,10 @@
-package after.src.Zones;
+package Zones;
 import java.util.ArrayList;
 import java.util.List;
 
-import after.src.Enumérations.StatutZone;
-import after.src.Enumérations.TypeProduction;
-import after.src.Utilitaires.*;
+import Enumérations.StatutZone;
+import Enumérations.TypeProduction;
+import Utilitaires.*;
 
 // Classe abstraite représentant une zone géographique de la ferme.
 // Chaque zone a un code unique, un nom, des limites GPS et un statut (active ou suspendue).

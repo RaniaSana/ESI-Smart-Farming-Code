@@ -1,11 +1,11 @@
-package after.src.Cultures;
+package Cultures;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import after.src.Enumérations.StadeCroissance;
-import after.src.Enumérations.TypeCulture;
+import Enumérations.StadeCroissance;
+import Enumérations.TypeCulture;
 
 // Représente une culture plantée dans une zone de culture.
 // On y suit son stade de croissance et ses exigences pédologiques.

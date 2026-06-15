@@ -1,10 +1,10 @@
-package after.src.Animaux;
+package Animaux;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import after.src.Enumérations.EtatSante;
-import after.src.Enumérations.TypeEvenementSanitaire;  
+import Enumérations.EtatSante;
+import Enumérations.TypeEvenementSanitaire;  
 
 
 
@@ -95,13 +95,9 @@ public class Animal {
         }
     }
 
-    /*public String toString() {
+public String toString() {
         return "Animal{numero='" + numero + "', espece=" + espece.getNom()
                 + ", age=" + age + ", poids=" + poids + ", etat=" + etat + "}";
-    }*/
-
-        public String toString() {
-        return "[" + numero + "]" + espece.getNom() + " | " + "age:" + getAge() + " | " + getPoids() + " | " + getEtat() ;
-
-    }
+   
+}
 }

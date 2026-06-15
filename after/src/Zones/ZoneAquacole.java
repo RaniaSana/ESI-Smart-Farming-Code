@@ -1,9 +1,8 @@
-package after.src.Zones;
+package Zones;
 
 
-import after.src.Animaux.*;
-import after.src.Cultures.Culture;
-import after.src.Utilitaires.*;
+import Animaux.*;
+import Utilitaires.*;
 
 // Zone aquacole : un bassin avec une espèce aquacole (poissons, crevettes...)
 // surveillée par des capteurs d'eau (température, oxygène, pH).
