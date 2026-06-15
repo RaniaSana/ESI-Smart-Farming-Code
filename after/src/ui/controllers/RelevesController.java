@@ -3,6 +3,7 @@ package ui.controllers;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ public class RelevesController {
     private final List<String[]> backingList;
     private final ObservableList<ReleveRow> rows = FXCollections.observableArrayList();
     private final TableView<ReleveRow> table = new TableView<>();
+    private FilteredList<ReleveRow> filteredRows;
 
     public RelevesController(List<String[]> backingList) {
         this.backingList = backingList;
@@ -39,13 +41,34 @@ public class RelevesController {
         cDate.setCellValueFactory(p -> p.getValue().date);
 
         table.getColumns().addAll(cCode, cCapteur, cValeur, cUnite, cNiveau, cDate);
-        table.setItems(rows);
+        filteredRows = new FilteredList<>(rows, row -> true);
+        table.setItems(filteredRows);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public Node getView() {
         VBox wrap = new VBox(8);
         wrap.setPadding(new Insets(6));
+
+        HBox filters = new HBox(8);
+        TextField capteurFilter = new TextField();
+        capteurFilter.setPromptText("Capteur");
+        ComboBox<String> niveauFilter = new ComboBox<>();
+        niveauFilter.getItems().addAll("Tous", "NORMAL", "WARNING", "CRITICAL");
+        niveauFilter.getSelectionModel().selectFirst();
+        TextField dateFilter = new TextField();
+        dateFilter.setPromptText("Date");
+        Button clearFilters = new Button("Réinitialiser");
+        filters.getChildren().addAll(new Label("Filtres:"), capteurFilter, niveauFilter, dateFilter, clearFilters);
+
+        capteurFilter.textProperty().addListener((o, oldValue, newValue) -> applyFilters(capteurFilter, niveauFilter, dateFilter));
+        niveauFilter.valueProperty().addListener((o, oldValue, newValue) -> applyFilters(capteurFilter, niveauFilter, dateFilter));
+        dateFilter.textProperty().addListener((o, oldValue, newValue) -> applyFilters(capteurFilter, niveauFilter, dateFilter));
+        clearFilters.setOnAction(e -> {
+            capteurFilter.clear();
+            niveauFilter.getSelectionModel().selectFirst();
+            dateFilter.clear();
+        });
 
         HBox actions = new HBox(8);
         Button add = new Button("➕ Ajouter");
@@ -58,8 +81,19 @@ public class RelevesController {
         del.setOnAction(e -> doDelete());
 
         VBox.setVgrow(table, Priority.ALWAYS);
-        wrap.getChildren().addAll(actions, table);
+        wrap.getChildren().addAll(filters, actions, table);
         return wrap;
+    }
+
+    private void applyFilters(TextField capteurFilter, ComboBox<String> niveauFilter, TextField dateFilter) {
+        String capteur = capteurFilter.getText() == null ? "" : capteurFilter.getText().trim().toLowerCase();
+        String niveau = niveauFilter.getValue();
+        String date = dateFilter.getText() == null ? "" : dateFilter.getText().trim().toLowerCase();
+        filteredRows.setPredicate(row ->
+            row.capteur.get().toLowerCase().contains(capteur)
+                && ("Tous".equals(niveau) || row.niveau.get().equals(niveau))
+                && row.date.get().toLowerCase().contains(date)
+        );
     }
 
     private void doAdd() {

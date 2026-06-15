@@ -3,6 +3,7 @@ package ui.controllers;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ public class CapteursController {
     private final List<String[]> backingList;
     private final ObservableList<CapteurRow> rows = FXCollections.observableArrayList();
     private final TableView<CapteurRow> table = new TableView<>();
+    private FilteredList<CapteurRow> filteredRows;
 
     public CapteursController(List<String[]> backingList) {
         this.backingList = backingList;
@@ -39,13 +41,34 @@ public class CapteursController {
         cStatut.setCellValueFactory(p -> p.getValue().statut);
 
         table.getColumns().addAll(cCode, cZone, cType, cMesure, cSeuils, cStatut);
-        table.setItems(rows);
+        filteredRows = new FilteredList<>(rows, row -> true);
+        table.setItems(filteredRows);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public Node getView() {
         VBox wrap = new VBox(8);
         wrap.setPadding(new Insets(6));
+
+        HBox filters = new HBox(8);
+        TextField zoneFilter = new TextField();
+        zoneFilter.setPromptText("Zone");
+        TextField typeFilter = new TextField();
+        typeFilter.setPromptText("Type");
+        ComboBox<String> statutFilter = new ComboBox<>();
+        statutFilter.getItems().addAll("Tous", "ACTIVE", "FAULTY", "SUSPENDED");
+        statutFilter.getSelectionModel().selectFirst();
+        Button clearFilters = new Button("Réinitialiser");
+        filters.getChildren().addAll(new Label("Filtres:"), zoneFilter, typeFilter, statutFilter, clearFilters);
+
+        zoneFilter.textProperty().addListener((o, oldValue, newValue) -> applyFilters(zoneFilter, typeFilter, statutFilter));
+        typeFilter.textProperty().addListener((o, oldValue, newValue) -> applyFilters(zoneFilter, typeFilter, statutFilter));
+        statutFilter.valueProperty().addListener((o, oldValue, newValue) -> applyFilters(zoneFilter, typeFilter, statutFilter));
+        clearFilters.setOnAction(e -> {
+            zoneFilter.clear();
+            typeFilter.clear();
+            statutFilter.getSelectionModel().selectFirst();
+        });
 
         HBox actions = new HBox(8);
         Button add = new Button("➕ Ajouter");
@@ -58,8 +81,19 @@ public class CapteursController {
         del.setOnAction(e -> doDelete());
 
         VBox.setVgrow(table, Priority.ALWAYS);
-        wrap.getChildren().addAll(actions, table);
+        wrap.getChildren().addAll(filters, actions, table);
         return wrap;
+    }
+
+    private void applyFilters(TextField zoneFilter, TextField typeFilter, ComboBox<String> statutFilter) {
+        String zone = zoneFilter.getText() == null ? "" : zoneFilter.getText().trim().toLowerCase();
+        String type = typeFilter.getText() == null ? "" : typeFilter.getText().trim().toLowerCase();
+        String statut = statutFilter.getValue();
+        filteredRows.setPredicate(row ->
+            row.zone.get().toLowerCase().contains(zone)
+                && row.type.get().toLowerCase().contains(type)
+                && ("Tous".equals(statut) || row.statut.get().equals(statut))
+        );
     }
 
     private void doAdd() {
