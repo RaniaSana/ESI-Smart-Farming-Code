@@ -1,0 +1,15 @@
+package Capteurs;
+
+public enum TypeMesure {
+    
+    TEMPERATURE,
+    HUMIDITE,
+    PRESSION,
+    LUMINOSITE,
+    PH,
+    NUTRIMENTS,
+    SALINITE,
+    FREQUENCE_CARDIAQUE,
+    TEMPERATURE_CORPORELLE,
+    SATURATION_O2
+}
