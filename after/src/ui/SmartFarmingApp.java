@@ -883,9 +883,8 @@ public class SmartFarmingApp extends Application {
         res.ifPresent(arr -> {
             if (arr[0] != null && !arr[0].isBlank()) {
                 zoneData.add(arr);
+                zonesController.refresh();
                 showFerme();
-                // rafraîchir aussi la page Zones & Cultures si visible
-                showZonesCultures();
             }
         });
     }
@@ -919,7 +918,15 @@ public class SmartFarmingApp extends Application {
         java.util.Optional<String[]> res = dlg.showAndWait();
         res.ifPresent(arr -> {
             if (arr[0] != null && !arr[0].isBlank()) {
+                try {
+                    if (arr.length > 3 && arr[3] != null && !arr[3].isBlank()) Double.parseDouble(arr[3]);
+                } catch (NumberFormatException ex) {
+                    Alert a = new Alert(Alert.AlertType.ERROR, "Le poids doit être un nombre.", ButtonType.OK);
+                    a.showAndWait();
+                    return;
+                }
                 animalData.add(arr);
+                animauxController.refresh();
                 showElevage();
             }
         });

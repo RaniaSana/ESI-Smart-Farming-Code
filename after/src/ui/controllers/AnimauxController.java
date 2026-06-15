@@ -105,19 +105,8 @@ public class AnimauxController {
         dlg.getDialogPane().setContent(grid);
         dlg.setResultConverter(bt -> bt == ok ? new String[]{code.getText(), espece.getText(), age.getText(), poids.getText(), etat.getText()} : null);
         dlg.showAndWait().ifPresent(arr -> {
-            if (arr[0] == null || arr[0].isBlank()) {
-                Alert a = new Alert(Alert.AlertType.ERROR, "Le code de l'animal est requis.", ButtonType.OK);
-                a.showAndWait();
-                return;
-            }
-            // validate poids is numeric
-            try {
-                if (arr.length > 3 && arr[3] != null && !arr[3].isBlank()) Double.parseDouble(arr[3]);
-            } catch (NumberFormatException ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR, "Le poids doit être un nombre.", ButtonType.OK);
-                a.showAndWait();
-                return;
-            }
+            if (!isValidRow(arr)) return;
+
             boolean exists = backingList.stream().anyMatch(b -> b.length>0 && b[0].equals(arr[0]));
             if (exists) {
                 Alert a = new Alert(Alert.AlertType.ERROR, "Un animal avec ce code existe déjà.", ButtonType.OK);
@@ -149,6 +138,8 @@ public class AnimauxController {
         dlg.getDialogPane().setContent(grid);
         dlg.setResultConverter(bt -> bt == ok ? new String[]{code.getText(), espece.getText(), age.getText(), poids.getText(), etat.getText()} : null);
         dlg.showAndWait().ifPresent(arr -> {
+            if (!isValidRow(arr)) return;
+
             sel.code.set(arr[0]); sel.espece.set(arr[1]); sel.age.set(arr[2]); sel.poids.set(arr[3]); sel.etat.set(arr[4]);
             for (int i = 0; i < backingList.size(); i++) {
                 String[] b = backingList.get(i);
@@ -159,6 +150,22 @@ public class AnimauxController {
             }
             table.refresh();
         });
+    }
+
+    private boolean isValidRow(String[] arr) {
+        if (arr[0] == null || arr[0].isBlank()) {
+            Alert a = new Alert(Alert.AlertType.ERROR, "Le code de l'animal est requis.", ButtonType.OK);
+            a.showAndWait();
+            return false;
+        }
+        try {
+            if (arr.length > 3 && arr[3] != null && !arr[3].isBlank()) Double.parseDouble(arr[3]);
+        } catch (NumberFormatException ex) {
+            Alert a = new Alert(Alert.AlertType.ERROR, "Le poids doit être un nombre.", ButtonType.OK);
+            a.showAndWait();
+            return false;
+        }
+        return true;
     }
 
     private void doDelete() {
