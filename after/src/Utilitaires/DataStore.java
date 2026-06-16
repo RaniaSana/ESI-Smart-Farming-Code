@@ -75,25 +75,29 @@ public class DataStore {
     public static class SimpleData {
         public java.util.List<String[]> zones = new java.util.ArrayList<>();
         public java.util.List<String[]> animals = new java.util.ArrayList<>();
+        public java.util.List<String[]> capteurs = new java.util.ArrayList<>();
+        public java.util.List<String[]> alertes = new java.util.ArrayList<>();
+        public java.util.List<String[]> releves = new java.util.ArrayList<>();
     }
 
     public void saveSimple(java.util.List<String[]> zones, java.util.List<String[]> animals) throws IOException {
+        saveSimple(zones, animals, java.util.List.of(), java.util.List.of(), java.util.List.of());
+    }
+
+    public void saveSimple(
+        java.util.List<String[]> zones,
+        java.util.List<String[]> animals,
+        java.util.List<String[]> capteurs,
+        java.util.List<String[]> alertes,
+        java.util.List<String[]> releves
+    ) throws IOException {
         if (!Files.exists(DATA_DIR)) Files.createDirectories(DATA_DIR);
         JsonObject root = new JsonObject();
-        JsonArray za = new JsonArray();
-        for (String[] z : zones) {
-            JsonArray row = new JsonArray();
-            for (String v : z) row.add(v == null ? JsonNull.INSTANCE : new JsonPrimitive(v));
-            za.add(row);
-        }
-        JsonArray aa = new JsonArray();
-        for (String[] a : animals) {
-            JsonArray row = new JsonArray();
-            for (String v : a) row.add(v == null ? JsonNull.INSTANCE : new JsonPrimitive(v));
-            aa.add(row);
-        }
-        root.add("zones", za);
-        root.add("animals", aa);
+        root.add("zones", toJsonArray(zones));
+        root.add("animals", toJsonArray(animals));
+        root.add("capteurs", toJsonArray(capteurs));
+        root.add("alertes", toJsonArray(alertes));
+        root.add("releves", toJsonArray(releves));
         try (Writer w = Files.newBufferedWriter(DEFAULT_FILE)) {
             gson.toJson(root, w);
         }
@@ -122,7 +126,34 @@ public class DataStore {
                     sd.animals.add(row);
                 }
             }
+            loadRows(obj, "capteurs", sd.capteurs);
+            loadRows(obj, "alertes", sd.alertes);
+            loadRows(obj, "releves", sd.releves);
         }
         return sd;
+    }
+
+    private JsonArray toJsonArray(java.util.List<String[]> values) {
+        JsonArray jsonRows = new JsonArray();
+        for (String[] valuesRow : values) {
+            JsonArray row = new JsonArray();
+            for (String value : valuesRow) {
+                row.add(value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));
+            }
+            jsonRows.add(row);
+        }
+        return jsonRows;
+    }
+
+    private void loadRows(JsonObject obj, String key, java.util.List<String[]> target) {
+        if (!obj.has(key) || !obj.get(key).isJsonArray()) return;
+        for (JsonElement element : obj.getAsJsonArray(key)) {
+            JsonArray arr = element.getAsJsonArray();
+            String[] row = new String[arr.size()];
+            for (int i = 0; i < arr.size(); i++) {
+                row[i] = arr.get(i).isJsonNull() ? null : arr.get(i).getAsString();
+            }
+            target.add(row);
+        }
     }
 }

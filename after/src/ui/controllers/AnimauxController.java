@@ -3,6 +3,7 @@ package ui.controllers;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ public class AnimauxController {
     private final List<String[]> backingList;
     private final ObservableList<AnimalRow> rows = FXCollections.observableArrayList();
     private final TableView<AnimalRow> table = new TableView<>();
+    private FilteredList<AnimalRow> filteredRows;
 
     public AnimauxController(List<String[]> backingList) {
         this.backingList = backingList;
@@ -37,13 +39,30 @@ public class AnimauxController {
         cEtat.setCellValueFactory(p -> p.getValue().etat);
 
         table.getColumns().addAll(cCode, cEsp, cAge, cPoids, cEtat);
-        table.setItems(rows);
+        filteredRows = new FilteredList<>(rows, row -> true);
+        table.setItems(filteredRows);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public Node getView() {
         VBox wrap = new VBox(8);
         wrap.setPadding(new Insets(6));
+
+        HBox filters = new HBox(8);
+        TextField especeFilter = new TextField();
+        especeFilter.setPromptText("Espèce/code");
+        ComboBox<String> etatFilter = new ComboBox<>();
+        etatFilter.getItems().addAll("Tous", "SAIN", "MALADE", "QUARANTAINE");
+        etatFilter.getSelectionModel().selectFirst();
+        Button clearFilters = new Button("Réinitialiser");
+        filters.getChildren().addAll(new Label("Filtres:"), especeFilter, etatFilter, clearFilters);
+
+        especeFilter.textProperty().addListener((o, oldValue, newValue) -> applyFilters(especeFilter, etatFilter));
+        etatFilter.valueProperty().addListener((o, oldValue, newValue) -> applyFilters(especeFilter, etatFilter));
+        clearFilters.setOnAction(e -> {
+            especeFilter.clear();
+            etatFilter.getSelectionModel().selectFirst();
+        });
 
         HBox actions = new HBox(8);
         Button add = new Button("➕ Ajouter");
@@ -56,8 +75,17 @@ public class AnimauxController {
         del.setOnAction(e -> doDelete());
 
         VBox.setVgrow(table, Priority.ALWAYS);
-        wrap.getChildren().addAll(actions, table);
+        wrap.getChildren().addAll(filters, actions, table);
         return wrap;
+    }
+
+    private void applyFilters(TextField especeFilter, ComboBox<String> etatFilter) {
+        String especeOrCode = especeFilter.getText() == null ? "" : especeFilter.getText().trim().toLowerCase();
+        String etat = etatFilter.getValue();
+        filteredRows.setPredicate(row ->
+            (row.code.get().toLowerCase().contains(especeOrCode) || row.espece.get().toLowerCase().contains(especeOrCode))
+                && ("Tous".equals(etat) || row.etat.get().equals(etat))
+        );
     }
 
     private void doAdd() {
@@ -77,19 +105,8 @@ public class AnimauxController {
         dlg.getDialogPane().setContent(grid);
         dlg.setResultConverter(bt -> bt == ok ? new String[]{code.getText(), espece.getText(), age.getText(), poids.getText(), etat.getText()} : null);
         dlg.showAndWait().ifPresent(arr -> {
-            if (arr[0] == null || arr[0].isBlank()) {
-                Alert a = new Alert(Alert.AlertType.ERROR, "Le code de l'animal est requis.", ButtonType.OK);
-                a.showAndWait();
-                return;
-            }
-            // validate poids is numeric
-            try {
-                if (arr.length > 3 && arr[3] != null && !arr[3].isBlank()) Double.parseDouble(arr[3]);
-            } catch (NumberFormatException ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR, "Le poids doit être un nombre.", ButtonType.OK);
-                a.showAndWait();
-                return;
-            }
+            if (!isValidRow(arr)) return;
+
             boolean exists = backingList.stream().anyMatch(b -> b.length>0 && b[0].equals(arr[0]));
             if (exists) {
                 Alert a = new Alert(Alert.AlertType.ERROR, "Un animal avec ce code existe déjà.", ButtonType.OK);
@@ -121,6 +138,8 @@ public class AnimauxController {
         dlg.getDialogPane().setContent(grid);
         dlg.setResultConverter(bt -> bt == ok ? new String[]{code.getText(), espece.getText(), age.getText(), poids.getText(), etat.getText()} : null);
         dlg.showAndWait().ifPresent(arr -> {
+            if (!isValidRow(arr)) return;
+
             sel.code.set(arr[0]); sel.espece.set(arr[1]); sel.age.set(arr[2]); sel.poids.set(arr[3]); sel.etat.set(arr[4]);
             for (int i = 0; i < backingList.size(); i++) {
                 String[] b = backingList.get(i);
@@ -131,6 +150,22 @@ public class AnimauxController {
             }
             table.refresh();
         });
+    }
+
+    private boolean isValidRow(String[] arr) {
+        if (arr[0] == null || arr[0].isBlank()) {
+            Alert a = new Alert(Alert.AlertType.ERROR, "Le code de l'animal est requis.", ButtonType.OK);
+            a.showAndWait();
+            return false;
+        }
+        try {
+            if (arr.length > 3 && arr[3] != null && !arr[3].isBlank()) Double.parseDouble(arr[3]);
+        } catch (NumberFormatException ex) {
+            Alert a = new Alert(Alert.AlertType.ERROR, "Le poids doit être un nombre.", ButtonType.OK);
+            a.showAndWait();
+            return false;
+        }
+        return true;
     }
 
     private void doDelete() {

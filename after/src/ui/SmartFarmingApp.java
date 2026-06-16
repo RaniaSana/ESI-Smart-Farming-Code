@@ -14,6 +14,9 @@ import Utilitaires.DataStore;
 import Utilitaires.DataStore.SimpleData;
 import ui.controllers.ZonesController;
 import ui.controllers.AnimauxController;
+import ui.controllers.CapteursController;
+import ui.controllers.AlertesController;
+import ui.controllers.RelevesController;
 import java.io.IOException;
 
 /**
@@ -45,8 +48,15 @@ public class SmartFarmingApp extends Application {
     // Données en mémoire pour interaction simple
     private java.util.List<String[]> zoneData = new java.util.ArrayList<>();
     private java.util.List<String[]> animalData = new java.util.ArrayList<>();
+    private java.util.List<String[]> capteurData = new java.util.ArrayList<>();
+    private java.util.List<String[]> alerteData = new java.util.ArrayList<>();
+    private java.util.List<String[]> releveData = new java.util.ArrayList<>();
+    private java.util.List<String[]> productionData = new java.util.ArrayList<>();
     private ZonesController zonesController;
     private AnimauxController animauxController;
+    private CapteursController capteursController;
+    private AlertesController alertesController;
+    private RelevesController relevesController;
 
     @Override
     public void start(Stage stage) {
@@ -58,6 +68,9 @@ public class SmartFarmingApp extends Application {
         // controllers
         zonesController = new ZonesController(zoneData);
         animauxController = new AnimauxController(animalData);
+        capteursController = new CapteursController(capteurData);
+        alertesController = new AlertesController(alerteData);
+        relevesController = new RelevesController(releveData);
         root.setTop(buildTopBar());
         root.setStyle("-fx-background-color: " + COLOR_BG + ";");
 
@@ -84,6 +97,27 @@ public class SmartFarmingApp extends Application {
         animalData.add(new String[]{"A001", "Vache", "4 ans", "520.0", "MALADE"});
         animalData.add(new String[]{"A002", "Vache", "3 ans", "480.0", "MALADE"});
         animalData.add(new String[]{"A003", "Mouton", "2 ans", "65.0", "QUARANTAINE"});
+
+        capteurData.clear();
+        capteurData.add(new String[]{"CP001", "Z001", "CapteurSol", "HUMIDITE_SOL", "40 - 70", "ACTIVE"});
+        capteurData.add(new String[]{"CP002", "Z003", "CapteurEau", "TEMPERATURE_EAU", "18 - 26", "ACTIVE"});
+        capteurData.add(new String[]{"CP003", "Z002", "CapteurBiometrique", "POIDS", "450 - 650", "FAULTY"});
+
+        alerteData.clear();
+        alerteData.add(new String[]{"AL001", "CP003", "CRITICAL", "ACTIVE", "Perte de poids détectée sur A002"});
+        alerteData.add(new String[]{"AL002", "CP002", "WARNING", "ACKNOWLEDGED", "Température eau proche du seuil"});
+        alerteData.add(new String[]{"AL003", "CP001", "WARNING", "ACTIVE", "Humidité sol basse dans North Fields"});
+
+        releveData.clear();
+        releveData.add(new String[]{"R001", "CP001", "36.5", "%", "CRITICAL", "15/06/2026 08:30"});
+        releveData.add(new String[]{"R002", "CP002", "25.0", "°C", "NORMAL", "15/06/2026 08:35"});
+        releveData.add(new String[]{"R003", "CP003", "480.0", "kg", "WARNING", "15/06/2026 08:40"});
+
+        productionData.clear();
+        productionData.add(new String[]{"Z002", "LAIT", "120.5", "litres"});
+        productionData.add(new String[]{"Z002", "LAIT", "80.0", "litres"});
+        productionData.add(new String[]{"Z002", "OEUFS", "50.0", "unités"});
+        productionData.add(new String[]{"Z001", "RENDEMENT_CULTURE", "300.0", "kg"});
     }
 
     // ────────────────────────────────────────────────────────────────
@@ -114,6 +148,10 @@ public class SmartFarmingApp extends Application {
 
         Button[] navBtns = {
             navButton("📊  Tableau de bord",   true),
+            navButton("📡  Capteurs",          false),
+            navButton("🚨  Alertes",           false),
+            navButton("📈  Relevés",           false),
+            navButton("📋  Rapports",          false),
             navButton("🌾  Zones & Cultures",  false),
             navButton("🐄  Élevage",           false),
             navButton("🐟  Aquaculture",        false),
@@ -123,12 +161,16 @@ public class SmartFarmingApp extends Application {
         };
 
         navBtns[0].setOnAction(e -> { selectNav(navBtns, navBtns[0]); showDashboard(); });
-        navBtns[1].setOnAction(e -> { selectNav(navBtns, navBtns[1]); showZonesCultures(); });
-        navBtns[2].setOnAction(e -> { selectNav(navBtns, navBtns[2]); showElevage(); });
-        navBtns[3].setOnAction(e -> { selectNav(navBtns, navBtns[3]); showAquaculture(); });
-        navBtns[4].setOnAction(e -> { selectNav(navBtns, navBtns[4]); showSanteAnimale(); });
-        navBtns[5].setOnAction(e -> { selectNav(navBtns, navBtns[5]); showProduction(); });
-        navBtns[6].setOnAction(e -> { selectNav(navBtns, navBtns[6]); showFerme(); });
+        navBtns[1].setOnAction(e -> { selectNav(navBtns, navBtns[1]); showCapteurs(); });
+        navBtns[2].setOnAction(e -> { selectNav(navBtns, navBtns[2]); showAlertes(); });
+        navBtns[3].setOnAction(e -> { selectNav(navBtns, navBtns[3]); showReleves(); });
+        navBtns[4].setOnAction(e -> { selectNav(navBtns, navBtns[4]); showRapports(); });
+        navBtns[5].setOnAction(e -> { selectNav(navBtns, navBtns[5]); showZonesCultures(); });
+        navBtns[6].setOnAction(e -> { selectNav(navBtns, navBtns[6]); showElevage(); });
+        navBtns[7].setOnAction(e -> { selectNav(navBtns, navBtns[7]); showAquaculture(); });
+        navBtns[8].setOnAction(e -> { selectNav(navBtns, navBtns[8]); showSanteAnimale(); });
+        navBtns[9].setOnAction(e -> { selectNav(navBtns, navBtns[9]); showProduction(); });
+        navBtns[10].setOnAction(e -> { selectNav(navBtns, navBtns[10]); showFerme(); });
 
         menu.getChildren().addAll(navBtns);
 
@@ -224,7 +266,7 @@ public class SmartFarmingApp extends Application {
         Button btnLoad = actionButton("📂 Charger", COLOR_INFO);
         btnSave.setOnAction(e -> {
             try {
-                dataStore.saveSimple(zoneData, animalData);
+                dataStore.saveSimple(zoneData, animalData, capteurData, alerteData, releveData);
                 Alert a = new Alert(Alert.AlertType.INFORMATION, "Données sauvegardées dans /data/smartfarming.json", ButtonType.OK);
                 a.showAndWait();
             } catch (IOException ex) {
@@ -240,9 +282,18 @@ public class SmartFarmingApp extends Application {
                     zoneData.addAll(sd.zones);
                     animalData.clear();
                     animalData.addAll(sd.animals);
+                    capteurData.clear();
+                    capteurData.addAll(sd.capteurs);
+                    alerteData.clear();
+                    alerteData.addAll(sd.alertes);
+                    releveData.clear();
+                    releveData.addAll(sd.releves);
                     // refresh controllers and current view
                     zonesController.refresh();
                     animauxController.refresh();
+                    capteursController.refresh();
+                    alertesController.refresh();
+                    relevesController.refresh();
                     showDashboard();
                     Alert a = new Alert(Alert.AlertType.INFORMATION, "Données chargées.", ButtonType.OK);
                     a.showAndWait();
@@ -269,10 +320,10 @@ public class SmartFarmingApp extends Application {
         // KPI row
         HBox kpiRow = new HBox(16);
         kpiRow.getChildren().addAll(
-            kpiCard("Zones actives",      "3",   "#E8F5E9", COLOR_ACCENT_DARK),
-            kpiCard("Cultures",            "3",   "#E3F2FD", COLOR_INFO),
-            kpiCard("Animaux",             "3",   "#FFF3E0", COLOR_WARN),
-            kpiCard("Animaux malades",     "2",   "#FFEBEE", COLOR_DANGER)
+            kpiCard("Zones actives",      String.valueOf(countRowsByValue(zoneData, 3, "ACTIVE")), "#E8F5E9", COLOR_ACCENT_DARK),
+            kpiCard("Capteurs",            String.valueOf(capteurData.size()), "#E3F2FD", COLOR_INFO),
+            kpiCard("Alertes actives",     String.valueOf(countRowsByValue(alerteData, 3, "ACTIVE")), "#FFEBEE", COLOR_DANGER),
+            kpiCard("Animaux à surveiller", String.valueOf(countAnimalsToWatch()), "#FFF3E0", COLOR_WARN)
         );
         kpiRow.setMaxWidth(Double.MAX_VALUE);
         for (javafx.scene.Node n : kpiRow.getChildren())
@@ -283,19 +334,153 @@ public class SmartFarmingApp extends Application {
         // Zones row
         contentArea.getChildren().add(sectionLabel("Zones de la ferme"));
         HBox zonesRow = new HBox(16);
-        zonesRow.getChildren().addAll(
-            zoneCard("Z001", "North Fields",  "ZoneCulture",  "3 cultures actives",      COLOR_ACCENT,  "#E8F5E9"),
-            zoneCard("Z002", "East Pasture",  "ZoneElevage",  "3 animaux · RUMINANT",    COLOR_WARN,    "#FFF8E1"),
-            zoneCard("Z003", "South Pond",    "ZoneAquacole", "Thon · 100 poissons",     COLOR_INFO,    "#E3F2FD")
-        );
+        for (String[] zone : zoneData) {
+            String code = getValue(zone, 0);
+            String name = getValue(zone, 1);
+            String type = getValue(zone, 2);
+            String detail = zoneDetail(type);
+            String accent = zoneAccent(type);
+            String bg = zoneBg(type);
+            zonesRow.getChildren().add(zoneCard(code, name, type, detail, accent, bg));
+        }
         for (javafx.scene.Node n : zonesRow.getChildren())
             HBox.setHgrow(n, Priority.ALWAYS);
         contentArea.getChildren().add(zonesRow);
 
         // Alertes
         contentArea.getChildren().add(sectionLabel("Alertes en cours"));
-        contentArea.getChildren().add(alertCard("⚠️  Vache2 (A002)", "État : MALADE — Perte de poids détectée. Traitement en cours.", COLOR_DANGER));
-        contentArea.getChildren().add(alertCard("⚠️  Mouton1 (A003)", "État : QUARANTAINE — Surveillance active.", COLOR_WARN));
+        addActiveAlertCards();
+    }
+
+    private void showCapteurs() {
+        pageTitle.setText("Capteurs");
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(sectionHeader("📡 Gestion des capteurs", "Capteurs"));
+
+        HBox kpiRow = new HBox(16);
+        kpiRow.getChildren().addAll(
+            kpiCard("Total capteurs", String.valueOf(capteurData.size()), "#E3F2FD", COLOR_INFO),
+            kpiCard("Actifs", String.valueOf(countRowsByValue(capteurData, 5, "ACTIVE")), "#E8F5E9", COLOR_ACCENT_DARK),
+            kpiCard("Défaillants", String.valueOf(countRowsByValue(capteurData, 5, "FAULTY")), "#FFEBEE", COLOR_DANGER)
+        );
+        for (javafx.scene.Node n : kpiRow.getChildren())
+            HBox.setHgrow(n, Priority.ALWAYS);
+        contentArea.getChildren().add(kpiRow);
+
+        contentArea.getChildren().add(sectionLabel("Capteurs enregistrés"));
+        contentArea.getChildren().add(capteursController.getView());
+
+        contentArea.getChildren().add(sectionLabel("Résumé par zone"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Zone", "Capteur", "Mesure", "Statut"},
+            rowsForColumns(capteurData, 1, 0, 3, 5)
+        ));
+    }
+
+    private void showAlertes() {
+        pageTitle.setText("Alertes");
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(sectionHeader("🚨 Suivi des alertes", "Alertes"));
+
+        HBox kpiRow = new HBox(16);
+        kpiRow.getChildren().addAll(
+            kpiCard("Alertes actives", String.valueOf(countRowsByValue(alerteData, 3, "ACTIVE")), "#FFEBEE", COLOR_DANGER),
+            kpiCard("Critiques", String.valueOf(countRowsByValue(alerteData, 2, "CRITICAL")), "#FFF3E0", COLOR_WARN),
+            kpiCard("Acquittées", String.valueOf(countRowsByValue(alerteData, 3, "ACKNOWLEDGED")), "#E3F2FD", COLOR_INFO)
+        );
+        for (javafx.scene.Node n : kpiRow.getChildren())
+            HBox.setHgrow(n, Priority.ALWAYS);
+        contentArea.getChildren().add(kpiRow);
+
+        contentArea.getChildren().add(sectionLabel("Alertes enregistrées"));
+        contentArea.getChildren().add(alertesController.getView());
+
+        contentArea.getChildren().add(sectionLabel("Alertes en cours"));
+        for (String[] alerte : alerteData) {
+            if (alerte.length > 3 && "ACTIVE".equals(alerte[3])) {
+                String gravite = alerte.length > 2 ? alerte[2] : "";
+                String color = "CRITICAL".equals(gravite) ? COLOR_DANGER : COLOR_WARN;
+                String code = alerte.length > 0 ? alerte[0] : "";
+                String capteur = alerte.length > 1 ? alerte[1] : "";
+                String msg = alerte.length > 4 ? alerte[4] : "";
+                contentArea.getChildren().add(alertCard("⚠️  " + code + " — " + capteur, msg, color));
+            }
+        }
+    }
+
+    private void showReleves() {
+        pageTitle.setText("Relevés");
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(sectionHeader("📈 Historique des relevés", "Relevés"));
+
+        HBox kpiRow = new HBox(16);
+        kpiRow.getChildren().addAll(
+            kpiCard("Total relevés", String.valueOf(releveData.size()), "#E3F2FD", COLOR_INFO),
+            kpiCard("Normaux", String.valueOf(countRowsByValue(releveData, 4, "NORMAL")), "#E8F5E9", COLOR_ACCENT_DARK),
+            kpiCard("Critiques", String.valueOf(countRowsByValue(releveData, 4, "CRITICAL")), "#FFEBEE", COLOR_DANGER)
+        );
+        for (javafx.scene.Node n : kpiRow.getChildren())
+            HBox.setHgrow(n, Priority.ALWAYS);
+        contentArea.getChildren().add(kpiRow);
+
+        contentArea.getChildren().add(sectionLabel("Relevés enregistrés"));
+        contentArea.getChildren().add(relevesController.getView());
+
+        contentArea.getChildren().add(sectionLabel("Lecture rapide"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Capteur", "Valeur", "Unité", "Niveau", "Date"},
+            rowsForColumns(releveData, 1, 2, 3, 4, 5)
+        ));
+    }
+
+    private void showRapports() {
+        pageTitle.setText("Rapports");
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(sectionHeader("📋 Rapport global — Ferme SmartFarming", "Rapports"));
+
+        HBox kpiRow = new HBox(16);
+        kpiRow.getChildren().addAll(
+            kpiCard("Zones actives", String.valueOf(countRowsByValue(zoneData, 3, "ACTIVE")), "#E8F5E9", COLOR_ACCENT_DARK),
+            kpiCard("Animaux", String.valueOf(animalData.size()), "#FFF3E0", COLOR_WARN),
+            kpiCard("Alertes actives", String.valueOf(countRowsByValue(alerteData, 3, "ACTIVE")), "#FFEBEE", COLOR_DANGER),
+            kpiCard("Relevés critiques", String.valueOf(countRowsByValue(releveData, 4, "CRITICAL")), "#E3F2FD", COLOR_INFO)
+        );
+        for (javafx.scene.Node n : kpiRow.getChildren())
+            HBox.setHgrow(n, Priority.ALWAYS);
+        contentArea.getChildren().add(kpiRow);
+
+        contentArea.getChildren().add(sectionLabel("Résumé des zones"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Code", "Nom", "Type", "Statut", "Capteurs liés"},
+            zoneReportRows()
+        ));
+
+        contentArea.getChildren().add(sectionLabel("Résumé animaux"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Code", "Espèce", "Âge", "Poids", "État santé"},
+            rowsForColumns(animalData, 0, 1, 2, 3, 4)
+        ));
+
+        contentArea.getChildren().add(sectionLabel("Rapport capteurs — dernier état"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Zone", "Capteur", "Mesure", "Dernier relevé", "Niveau", "Statut"},
+            sensorReportRows()
+        ));
+
+        contentArea.getChildren().add(sectionLabel("Alertes à traiter"));
+        addActiveAlertCards();
+
+        contentArea.getChildren().add(sectionLabel("Derniers relevés critiques"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Relevé", "Capteur", "Valeur", "Unité", "Niveau", "Date"},
+            rowsMatchingValue(releveData, 4, "CRITICAL")
+        ));
+
+        contentArea.getChildren().add(sectionLabel("Résumé production"));
+        contentArea.getChildren().add(buildTable(
+            new String[]{"Type production", "Quantité totale", "Unité"},
+            productionSummaryRows()
+        ));
     }
 
     private void showZonesCultures() {
@@ -412,9 +597,9 @@ public class SmartFarmingApp extends Application {
 
         HBox kpiRow = new HBox(16);
         kpiRow.getChildren().addAll(
-            kpiCard("Total animaux",        "3",  "#E8F5E9", COLOR_ACCENT_DARK),
-            kpiCard("Malades/Quarantaine",  "3",  "#FFEBEE", COLOR_DANGER),
-            kpiCard("Sains",                "0",  "#F3E5F5", "#6A1B9A")
+            kpiCard("Total animaux",        String.valueOf(animalData.size()),  "#E8F5E9", COLOR_ACCENT_DARK),
+            kpiCard("Malades/Quarantaine",  String.valueOf(countAnimalsToWatch()),  "#FFEBEE", COLOR_DANGER),
+            kpiCard("Sains",                String.valueOf(countRowsByValue(animalData, 4, "SAIN")),  "#F3E5F5", "#6A1B9A")
         );
         for (javafx.scene.Node n : kpiRow.getChildren())
             HBox.setHgrow(n, Priority.ALWAYS);
@@ -442,9 +627,9 @@ public class SmartFarmingApp extends Application {
 
         HBox kpiRow = new HBox(16);
         kpiRow.getChildren().addAll(
-            kpiCard("LAIT",              "200.5 L",  "#E3F2FD", COLOR_INFO),
-            kpiCard("OEUFS",             "50 u",     "#FFF8E1", COLOR_WARN),
-            kpiCard("RENDEMENT CULTURE", "300 kg",   "#E8F5E9", COLOR_ACCENT_DARK)
+            kpiCard("LAIT",              formatProductionTotal("LAIT"),  "#E3F2FD", COLOR_INFO),
+            kpiCard("OEUFS",             formatProductionTotal("OEUFS"), "#FFF8E1", COLOR_WARN),
+            kpiCard("RENDEMENT CULTURE", formatProductionTotal("RENDEMENT_CULTURE"), "#E8F5E9", COLOR_ACCENT_DARK)
         );
         for (javafx.scene.Node n : kpiRow.getChildren())
             HBox.setHgrow(n, Priority.ALWAYS);
@@ -453,12 +638,7 @@ public class SmartFarmingApp extends Application {
         contentArea.getChildren().add(sectionLabel("Détail par zone"));
         GridPane table = buildTable(
             new String[]{"Zone", "Type production", "Quantité", "Unité"},
-            new String[][]{
-                {"Z002 — East Pasture", "LAIT",              "120.5", "litres"},
-                {"Z002 — East Pasture", "LAIT",               "80.0", "litres"},
-                {"Z002 — East Pasture", "OEUFS",              "50.0", "unités"},
-                {"Z001 — North Fields", "RENDEMENT_CULTURE", "300.0", "kg"},
-            }
+            productionDetailRows()
         );
         contentArea.getChildren().add(table);
     }
@@ -474,7 +654,10 @@ public class SmartFarmingApp extends Application {
             new String[][]{
                 {"Code ferme",    "F001"},
                 {"Nom",           "Green Valley Farm"},
-                {"Nb zones",      "3"},
+                {"Nb zones",      String.valueOf(zoneData.size())},
+                {"Nb animaux",    String.valueOf(animalData.size())},
+                {"Nb capteurs",   String.valueOf(capteurData.size())},
+                {"Alertes actives", String.valueOf(countRowsByValue(alerteData, 3, "ACTIVE"))},
                 {"Lat min",       "36.0°"},
                 {"Lat max",       "37.0°"},
                 {"Lon min",       "2.5°"},
@@ -497,6 +680,179 @@ public class SmartFarmingApp extends Application {
     private GridPane buildTableFromList(String[] headers, java.util.List<String[]> rows) {
         String[][] arr = rows.toArray(new String[rows.size()][]);
         return buildTable(headers, arr);
+    }
+
+    private int countRowsByValue(java.util.List<String[]> rows, int index, String value) {
+        int count = 0;
+        for (String[] row : rows) {
+            if (row.length > index && value.equals(row[index])) count++;
+        }
+        return count;
+    }
+
+    private int countAnimalsToWatch() {
+        int count = 0;
+        for (String[] animal : animalData) {
+            String etat = getValue(animal, 4);
+            if ("MALADE".equals(etat) || "QUARANTAINE".equals(etat)) count++;
+        }
+        return count;
+    }
+
+    private String getValue(String[] row, int index) {
+        return row.length > index && row[index] != null ? row[index] : "";
+    }
+
+    private String zoneDetail(String type) {
+        if ("ZoneElevage".equals(type)) return animalData.size() + " animaux";
+        if ("ZoneCulture".equals(type)) return "Cultures actives";
+        if ("ZoneAquacole".equals(type)) return "Aquaculture suivie";
+        return "Zone enregistrée";
+    }
+
+    private String zoneAccent(String type) {
+        if ("ZoneElevage".equals(type)) return COLOR_WARN;
+        if ("ZoneAquacole".equals(type)) return COLOR_INFO;
+        return COLOR_ACCENT;
+    }
+
+    private String zoneBg(String type) {
+        if ("ZoneElevage".equals(type)) return "#FFF8E1";
+        if ("ZoneAquacole".equals(type)) return "#E3F2FD";
+        return "#E8F5E9";
+    }
+
+    private String[][] rowsForColumns(java.util.List<String[]> rows, int... indexes) {
+        String[][] values = new String[rows.size()][indexes.length];
+        for (int r = 0; r < rows.size(); r++) {
+            String[] source = rows.get(r);
+            for (int c = 0; c < indexes.length; c++) {
+                int index = indexes[c];
+                values[r][c] = source.length > index && source[index] != null ? source[index] : "";
+            }
+        }
+        return values;
+    }
+
+    private String[][] rowsMatchingValue(java.util.List<String[]> rows, int index, String value) {
+        java.util.List<String[]> filtered = new java.util.ArrayList<>();
+        for (String[] row : rows) {
+            if (row.length > index && value.equals(row[index])) filtered.add(row);
+        }
+        return rowsForColumns(filtered, 0, 1, 2, 3, 4, 5);
+    }
+
+    private String[][] zoneReportRows() {
+        String[][] values = new String[zoneData.size()][5];
+        for (int i = 0; i < zoneData.size(); i++) {
+            String[] zone = zoneData.get(i);
+            String code = getValue(zone, 0);
+            values[i][0] = code;
+            values[i][1] = getValue(zone, 1);
+            values[i][2] = getValue(zone, 2);
+            values[i][3] = getValue(zone, 3);
+            values[i][4] = String.valueOf(countRowsByValue(capteurData, 1, code));
+        }
+        return values;
+    }
+
+    private String[][] sensorReportRows() {
+        String[][] values = new String[capteurData.size()][6];
+        for (int i = 0; i < capteurData.size(); i++) {
+            String[] capteur = capteurData.get(i);
+            String code = getValue(capteur, 0);
+            String[] lastReleve = lastReleveForCapteur(code);
+            values[i][0] = getZoneLabel(getValue(capteur, 1));
+            values[i][1] = code;
+            values[i][2] = getValue(capteur, 3);
+            values[i][3] = lastReleve == null ? "Aucun" : getValue(lastReleve, 2) + " " + getValue(lastReleve, 3);
+            values[i][4] = lastReleve == null ? "-" : getValue(lastReleve, 4);
+            values[i][5] = getValue(capteur, 5);
+        }
+        return values;
+    }
+
+    private String[] lastReleveForCapteur(String capteurCode) {
+        String[] last = null;
+        for (String[] releve : releveData) {
+            if (capteurCode.equals(getValue(releve, 1))) last = releve;
+        }
+        return last;
+    }
+
+    private String getZoneLabel(String code) {
+        for (String[] zone : zoneData) {
+            if (code.equals(getValue(zone, 0))) return code + " — " + getValue(zone, 1);
+        }
+        return code;
+    }
+
+    private String[][] productionDetailRows() {
+        String[][] values = new String[productionData.size()][4];
+        for (int i = 0; i < productionData.size(); i++) {
+            String[] row = productionData.get(i);
+            values[i][0] = getZoneLabel(getValue(row, 0));
+            values[i][1] = getValue(row, 1);
+            values[i][2] = getValue(row, 2);
+            values[i][3] = getValue(row, 3);
+        }
+        return values;
+    }
+
+    private String[][] productionSummaryRows() {
+        String[] types = {"LAIT", "OEUFS", "RENDEMENT_CULTURE"};
+        String[][] values = new String[types.length][3];
+        for (int i = 0; i < types.length; i++) {
+            String type = types[i];
+            values[i][0] = type;
+            values[i][1] = String.format("%.1f", productionTotal(type));
+            values[i][2] = productionUnit(type);
+        }
+        return values;
+    }
+
+    private String formatProductionTotal(String type) {
+        return String.format("%.1f %s", productionTotal(type), productionUnit(type));
+    }
+
+    private double productionTotal(String type) {
+        double total = 0;
+        for (String[] row : productionData) {
+            if (type.equals(getValue(row, 1))) {
+                try {
+                    total += Double.parseDouble(getValue(row, 2));
+                } catch (NumberFormatException ignored) {
+                    // Ignore malformed demo values so the report can still render.
+                }
+            }
+        }
+        return total;
+    }
+
+    private String productionUnit(String type) {
+        for (String[] row : productionData) {
+            if (type.equals(getValue(row, 1))) return getValue(row, 3);
+        }
+        return "";
+    }
+
+    private void addActiveAlertCards() {
+        boolean hasActiveAlert = false;
+        for (String[] alerte : alerteData) {
+            if ("ACTIVE".equals(getValue(alerte, 3))) {
+                hasActiveAlert = true;
+                String gravite = getValue(alerte, 2);
+                String color = "CRITICAL".equals(gravite) ? COLOR_DANGER : COLOR_WARN;
+                contentArea.getChildren().add(alertCard(
+                    "⚠️  " + getValue(alerte, 0) + " — " + getValue(alerte, 1) + " (" + gravite + ")",
+                    getValue(alerte, 4),
+                    color
+                ));
+            }
+        }
+        if (!hasActiveAlert) {
+            contentArea.getChildren().add(alertCard("Aucune alerte active", "Tous les indicateurs sont sous contrôle.", COLOR_ACCENT_DARK));
+        }
     }
 
     private void addZoneDialog() {
@@ -527,9 +883,8 @@ public class SmartFarmingApp extends Application {
         res.ifPresent(arr -> {
             if (arr[0] != null && !arr[0].isBlank()) {
                 zoneData.add(arr);
+                zonesController.refresh();
                 showFerme();
-                // rafraîchir aussi la page Zones & Cultures si visible
-                showZonesCultures();
             }
         });
     }
@@ -563,7 +918,15 @@ public class SmartFarmingApp extends Application {
         java.util.Optional<String[]> res = dlg.showAndWait();
         res.ifPresent(arr -> {
             if (arr[0] != null && !arr[0].isBlank()) {
+                try {
+                    if (arr.length > 3 && arr[3] != null && !arr[3].isBlank()) Double.parseDouble(arr[3]);
+                } catch (NumberFormatException ex) {
+                    Alert a = new Alert(Alert.AlertType.ERROR, "Le poids doit être un nombre.", ButtonType.OK);
+                    a.showAndWait();
+                    return;
+                }
                 animalData.add(arr);
+                animauxController.refresh();
                 showElevage();
             }
         });
